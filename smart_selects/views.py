@@ -82,7 +82,7 @@ def filterchain(request, app, model, field, foreign_key_app_name, foreign_key_mo
     results = do_filter(queryset, keywords)
 
     # Sort results if model doesn't include a default ordering.
-    if not getattr(model_class._meta, 'ordering', False):
+    if not getattr(model_class._meta, 'ordering', False) and manager is not None:
         results = list(results)
         sort_results(results)
 

@@ -41,7 +41,8 @@ class ChainedManyToManyField(IntrospectiveFieldMixin, ManyToManyField):
     chains the choices of a previous combo box with this ManyToMany
     """
     def __init__(self, to, chained_field=None, chained_model_field=None,
-                 auto_choose=False, horizontal=False, verbose_name='', **kwargs):
+                 auto_choose=False, horizontal=False, verbose_name='',
+                 manager=None, **kwargs):
         """
         examples:
 
@@ -75,6 +76,7 @@ class ChainedManyToManyField(IntrospectiveFieldMixin, ManyToManyField):
         self.auto_choose = auto_choose
         self.horizontal = horizontal
         self.verbose_name = verbose_name
+        self.manager = manager
         super(ChainedManyToManyField, self).__init__(to, **kwargs)
 
     def deconstruct(self):
@@ -130,6 +132,7 @@ class ChainedManyToManyField(IntrospectiveFieldMixin, ManyToManyField):
             'foreign_key_app_name': foreign_key_app_name,
             'foreign_key_model_name': foreign_key_model_name,
             'foreign_key_field_name': foreign_key_field_name,
+            'manager': self.manager,
         }
         defaults.update(kwargs)
         return super(ChainedManyToManyField, self).formfield(**defaults)
@@ -140,7 +143,8 @@ class ChainedForeignKey(IntrospectiveFieldMixin, ForeignKey):
     chains the choices of a previous combo box with this one
     """
     def __init__(self, to, chained_field=None, chained_model_field=None,
-                 show_all=False, auto_choose=False, sort=True, view_name=None, **kwargs):
+                 show_all=False, auto_choose=False, sort=True, manager=None,
+                 view_name=None, **kwargs):
         """
         examples:
 
@@ -181,6 +185,7 @@ class ChainedForeignKey(IntrospectiveFieldMixin, ForeignKey):
         self.show_all = show_all
         self.auto_choose = auto_choose
         self.sort = sort
+        self.manager = manager
         self.view_name = view_name
         super(ChainedForeignKey, self).__init__(to, **kwargs)
 
@@ -242,6 +247,7 @@ class ChainedForeignKey(IntrospectiveFieldMixin, ForeignKey):
             'foreign_key_app_name': foreign_key_app_name,
             'foreign_key_model_name': foreign_key_model_name,
             'foreign_key_field_name': foreign_key_field_name,
+            'manager': self.manager,
         }
         defaults.update(kwargs)
         return super(ChainedForeignKey, self).formfield(**defaults)
