@@ -1,26 +1,27 @@
 
-(function($) {
-    chainedm2m = function() {
+(function ($) {
+    chainedm2m = function () {
         return {
-            fireEvent: function(element,event) {
-                var evt;
-                if (document.createEventObject){
+            fireEvent: function (element, event) {
+                var evt, rtn;
+                if (document.createEventObject) {
                     // dispatch for IE
                     evt = document.createEventObject();
-                    return element.fireEvent('on'+event,evt);
-                }
-                else{
+                    rtn = element.fireEvent('on' + event, evt);
+                } else {
                     // dispatch for firefox + others
                     evt = document.createEvent("HTMLEvents");
-                    evt.initEvent(event, true, true ); // event type,bubbling,cancelable
-                    return !element.dispatchEvent(evt);
+                    evt.initEvent(event, true, true); // event type,bubbling,cancelable
+                    rtn = !element.dispatchEvent(evt);
                 }
+
+                return rtn;
             },
 
-            dismissRelatedLookupPopup: function(win, chosenId) {
-                var name = windowname_to_id(win.name);
-                var elem = document.getElementById(name);
-                if (elem.className.indexOf('vManyToManyRawIdAdminField') != -1 && elem.value) {
+            dismissRelatedLookupPopup: function (win, chosenId) {
+                var name = windowname_to_id(win.name),
+                    elem = document.getElementById(name);
+                if (elem.className.indexOf('vManyToManyRawIdAdminField') !== -1 && elem.value) {
                     elem.value += ',' + chosenId;
                 } else {
                     elem.value = chosenId;
@@ -29,13 +30,16 @@
                 win.close();
             },
 
-            fill_field: function(val, initial_value, elem_id, url, initial_parent, auto_choose){
+            fill_field: function (val, initial_value, elem_id, url, initial_parent, auto_choose) {
                 var $selectField = $(elem_id),
-                    $selectedto = $(elem_id+'_to'),
+                    $selectedto = $(elem_id + '_to'),
                     cache_to = elem_id.replace('#', '') + '_to',
-                    cache_from = elem_id.replace('#', '') + '_from';
+                    cache_from = elem_id.replace('#', '') + '_from',
+                    target_url = url + "/" + val + "/",
+                    options = [],
+                    selectedoptions = [];
                 if (!$selectField.length) {
-                    $selectField = $(elem_id+'_from');
+                    $selectField = $(elem_id + '_from');
                 }
                 function trigger_chosen_updated() {
                     if ($.fn.chosen !== undefined) {
@@ -43,7 +47,7 @@
                     }
                 }
 
-                if (!val || val === ''){
+                if (!val || val === '') {
                     $selectField.html('');
                     trigger_chosen_updated();
                     return;
@@ -53,16 +57,12 @@
                 val = [].concat(val);
                 initial_parent = [].concat(initial_parent);
 
-                var target_url = url + "/" + val + "/",
-                    options = [],
-                    selectedoptions = [];
-
-                $.getJSON(target_url, function(j){
-                    auto_choose = j.length == 1 && auto_choose;
+                $.getJSON(target_url, function (j) {
+                    auto_choose = j.length === 1 && auto_choose;
 
                     var selected_values = {};
                     // if val and initial_parent have any common values, we need to set selected options.
-                    if($(val).filter(initial_parent).length >= 0 && initial_value) {
+                    if ($(val).filter(initial_parent).length >= 0 && initial_value) {
                         for (var i = 0; i < initial_value.length; i++) {
                             selected_values[initial_value[i]] = true;
                         }
